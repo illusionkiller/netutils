@@ -28,7 +28,7 @@ RT_WEAK void *tftp_file_open(const char *fname, const char *mode, int is_write)
     {
         if (is_write)
         {
-            fd = open(fname, O_WRONLY | O_CREAT, 0);
+            fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0);
         }
         else
         {
@@ -46,7 +46,7 @@ RT_WEAK void *tftp_file_open(const char *fname, const char *mode, int is_write)
 RT_WEAK int tftp_file_write(void *handle, int pos, void *buff, int len)
 {
     int fd = (int)handle;
-
+    rt_thread_mdelay(1); 
     return write(fd, buff, len);
 }
 
@@ -214,7 +214,7 @@ static int _tftp_msh(int argc, char *argv[])
         }
         server = tftp_server_create(path[0], port);
         tftp_server_write_set(server, 1);
-        tid = rt_thread_create("tftps", tftp_server_thread, server, 2048, 18, 20);
+        tid = rt_thread_create("tftps", tftp_server_thread, server, 4096, 13, 20);
         if (tid == NULL)
         {
             return -1;
